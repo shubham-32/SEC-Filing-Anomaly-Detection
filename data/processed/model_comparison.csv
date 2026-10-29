@@ -1,0 +1,3 @@
+method,observations,flagged_observations,flagged_pct,median_score,control_flagged_pct,reference_flagged_pct
+Robust/trailing Z-score,1238,391,31.583198707592892,2.5744460579996478,32.438016528925615,28.51851851851852
+Isolation Forest,1238,62,5.008077544426494,0.3610400130964331,1.0330578512396695,19.25925925925926
