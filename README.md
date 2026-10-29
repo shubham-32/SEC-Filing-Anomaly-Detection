@@ -1,116 +1,188 @@
-# SEC Filing Anomaly Detection — Deliverable 1: Data Extraction
+# SEC Filing Financial Anomaly Detection System
 
-This deliverable builds a secondary dataset of financial-statement features from SEC EDGAR. The dataset is designed as input for statistical anomaly detection (Isolation Forest, Z-score) aimed at spotting patterns that can indicate financial-reporting fraud.
+**Task ID:** FDA-2: Fraud Detection through Financial Anomalies  
+**Course:** Big Data Analytics (Semester 7)  
+**Deliverables Completed:**  
+- **Deliverable 1:** Data Extraction, XBRL Standardization & Secondary Dataset  
+- **Deliverable 2:** Machine Learning, Multi-Year Trend Analysis & Automated New-Filing Pipeline  
 
-## Repository structure
+---
+
+## 1. Project Overview
+
+This project builds an automated end-to-end forensic analytics system to identify financial anomalies in US public company SEC EDGAR filings that could indicate fraudulent financial reporting, earnings manipulation, or severe operational distress.
+
+The system combines:
+1. **Automated SEC EDGAR Data Extraction (Deliverable 1):** Ingests raw XBRL filings, resolves reporting tag switches (ASC 606), derives discrete quarters, and constructs a point-in-time secondary dataset across 12 fiscal years (FY2014–FY2026).
+2. **Multi-Year Financial Trend Analytics (Deliverable 2):** Evaluates trailing 12-quarter (3-year) rolling baselines to detect structural breaks and inconsistent divergences (e.g. accelerating revenue growth while operating cash flows or margins collapse).
+3. **Statistical Anomaly Detection (Deliverable 2):** Computes trailing robust Z-scores using rolling median and Median Absolute Deviation (MAD) over prior quarters, isolating extreme quarterly shocks ($|Z| \ge 3.5\sigma$).
+4. **Machine Learning Anomaly Detection (Deliverable 2):** Implements a 300-tree **Isolation Forest** pipeline with robust scaling to detect subtle multidimensional patterns across 42 financial features.
+5. **Annual Beneish M-Score Benchmark (Deliverable 2):** Compares quarterly alerts against the classic 8-variable forensic manipulation probability index.
+6. **Automated Pipeline for New Filings (Deliverable 2):** An automated CLI engine that scores new filings on the fly, evaluates risk consensus, and generates an actionable forensic audit scorecard.
+
+---
+
+## 2. Repository Structure
 
 ```
-├── README.md
-├──  01_edgar_data_extraction.ipynb # extraction + feature engineering (run top to bottom)
+├── README.md                                 # Complete project documentation (Deliverables 1 & 2)
+├── 01_edgar_data_extraction.ipynb            # Deliverable 1: Extraction & secondary dataset build
+├── 02_ml_anomaly_detection.ipynb             # Deliverable 2: Fully executed ML & trend analysis notebook
+├── run_pipeline.py                           # Automated pipeline CLI for batch and new filing scoring
+├── live_demo.py                              # Interactive evaluation console for live project demonstration
+├── data_dictionary.csv                       # Feature definitions and XBRL lineage
+├── SEC_Anomaly_Detection_Deliverable1.pptx   # Deliverable 1 presentation deck
+├── SEC_Anomaly_Detection_Deliverable2.pptx   # Deliverable 2 presentation deck (16 widescreen slides)
+│
 ├── data/
-│   └── processed/                     # secondary dataset produced by the notebook
-│       ├── quarterly_features.csv
-│       ├── annual_features.csv
-│       ├── facts_long.csv
-│       └── coverage_report.csv
+│   └── processed/                            # Secondary dataset and generated ML artifacts
+│       ├── quarterly_features.csv            # Main secondary dataset (1,334 company-quarters, 94 features)
+│       ├── annual_features.csv               # Annual financial ratios and Beneish M-Scores
+│       ├── facts_long.csv                    # Audit trail of 47,514 raw XBRL facts mapped to accession numbers
+│       ├── coverage_report.csv               # Company data completeness audit
+│       ├── scored_quarterly.csv              # Full dataset with ML scores, Z-scores, and trend flags
+│       ├── anomaly_top100.csv                # Top 100 highest-ranked anomalous company-quarters
+│       ├── model_comparison.csv              # Statistical vs Isolation Forest comparison table
+│       ├── company_anomaly_ranking.csv       # Company-level anomaly frequency leaderboard
+│       ├── beneish_comparison.csv            # Concordance between quarterly alerts and annual M-Scores
+│       ├── multi_year_trend_anomalies.csv    # Quarters exhibiting multi-year structural trend breaks
+│       ├── isolation_forest_model.joblib     # Pre-trained scikit-learn model artifact
+│       └── run_summary.json                  # Pipeline execution metadata and parameters
+│
+├── src/
+│   ├── __init__.py                           # Package marker
+│   └── anomaly_pipeline.py                   # Core ML, statistical, trend, and scoring engine
+│
+├── tests/
+│   ├── __init__.py                           # Test package marker
+│   └── test_anomaly_pipeline.py              # 6 unit and integration test suites
+│
+├── docs/
+│   ├── DELIVERABLE2.md                       # Comprehensive Deliverable 2 methodology documentation
+│   └── figures/                              # High-resolution generated visualization charts
+│       ├── score_distribution.png            # Isolation Forest KDE distribution (Reference vs Control)
+│       ├── multi_year_trends.png             # 10+ year trajectory comparison (KHC, SMCI, MSFT)
+│       ├── top_anomalies_barchart.png        # Top 15 anomaly candidates bar chart
+│       └── case_studies_signals.png          # Real-world scandal signals (KHC write-down, UAA channel stuffing)
+│
+└── sec_filing_anomaly_deliverable2/          # Standalone deliverable 2 package (synchronized)
 ```
 
-Running the notebook produces the dataset in `data/processed/`:
+---
 
-| Output CSV | Grain | Use |
+## 3. Quick Start Guide
+
+### 3.1 Install Dependencies
+```bash
+pip install pandas numpy scikit-learn scipy statsmodels matplotlib seaborn python-pptx joblib nbformat nbclient nbconvert
+```
+
+### 3.2 Run the Automated Pipeline
+```bash
+# 1. Batch scoring of the secondary dataset:
+python run_pipeline.py
+
+# 2. Score a specific company's latest filing on demand:
+python run_pipeline.py --ticker SMCI
+python run_pipeline.py --ticker KHC
+python run_pipeline.py --ticker AAPL
+
+# 3. Score a custom filing JSON or CSV file:
+python run_pipeline.py --filing-file path/to/filing.json
+```
+
+### 3.3 Launch the Live Interactive Demonstration Console
+For project evaluation and viva demonstrations:
+```bash
+python live_demo.py
+```
+**Interactive Modes:**
+1. **Interactive Company Anomaly Explorer:** View any company's 10-year quarterly history, flag rates, and sudden deviation quarters.
+2. **Top Anomalies Leaderboard:** Universe-wide ranking of the most anomalous filings.
+3. **Automated Pipeline for New Filings (Live Simulation):** Ingest and score live filings for KHC, UAA, SMCI, or MSFT in under two seconds.
+4. **Forensic Fraud Case Studies:** Walkthrough the exact signals behind documented scandals.
+5. **Run Full Batch Pipeline:** One-click re-scoring and artifact refresh.
+
+### 3.4 Run the Unit & Integration Tests
+```bash
+python -c "from tests import test_anomaly_pipeline as t; t.test_quality_filters_and_feature_selection(); t.test_scoring_and_comparison_outputs(); t.test_multi_year_trend_analysis(); t.test_score_new_filing(); print('All tests passed!')"
+```
+
+---
+
+## 4. Methodology & Key Findings
+
+### 4.1 Secondary Dataset (Deliverable 1)
+- **Scope:** 26 companies across 12 fiscal years (FY2014–FY2026), comprising 1,334 company-quarters and 94 features.
+- **Control Group (20 companies):** Established blue chips (Apple, Microsoft, Johnson & Johnson, Costco, Caterpillar, Walmart, etc.).
+- **Reference Group (6 companies):** Companies with documented SEC enforcement actions or restatements (Kraft Heinz, Under Armour, Super Micro Computer, MiMedx, Plug Power, Mattel).
+- **Point-in-Time Data:** Retains numbers **as first reported** to prevent look-ahead bias and avoid artificial distortions from post-spinoff recasts.
+
+### 4.2 Multi-Year Financial Trend Analysis (Deliverable 2)
+- Trailing 12-quarter (3-year) rolling means ($\mu_{12Q}$) and standard deviations ($\sigma_{12Q}$) strictly prior to the evaluated quarter (`shift(1)`).
+- **Sudden Deviation:** $|\text{Trend Dev}| \ge 2.5\sigma$ marks structural trend breaks (282 quarters flagged).
+- **Inconsistent Trends:** Identifies quarters where revenue growth accelerates while operating margins or operating cash flows suddenly collapse.
+
+### 4.3 Statistical Anomaly Detection (Deliverable 2)
+- Uses rolling median and Median Absolute Deviation (MAD) over prior quarters:
+  $$RZ_t = \frac{x_t - \text{Median}(x_{t-8..t-1})}{1.4826 \times \text{MAD}(x_{t-8..t-1})}$$
+- **Threshold:** $|Z| \ge 3.5\sigma$ (391 quarters flagged; 33.5% reference flag rate vs 31.0% control flag rate).
+
+### 4.4 Machine Learning Anomaly Detection (Deliverable 2)
+- 300-tree **Isolation Forest** trained on 42 financial ratios with `RobustScaler` (10th–90th percentile) and `SimpleImputer(median)`.
+- **Contamination:** 0.05 (flags top 5.0% most unusual quarters = 62 observations).
+- Higher flag rate in the Reference Group (5.6%) versus Control Group (4.8%).
+
+### 4.5 Forensic Case Studies (Real-World Scandals Detected)
+1. **Kraft Heinz (KHC) Procurement Fraud:** Operating margin crashed to **-205%** ($RZ = -9.45\sigma$) in FY2018 Q4 alongside a $15.4B goodwill write-down. Classified as **HIGH ANOMALY**.
+2. **Under Armour (UAA) Channel Stuffing:** Receivables growth outstripped revenue growth by **$7.23\sigma$** (`ar_growth_minus_revenue_growth` $RZ = 7.23$) during the 2015-2016 pull-forward period.
+3. **Super Micro Computer (SMCI) Revenue Recognition:** Extreme revenue growth acceleration ($RZ = 3.15\sigma$) and Days Sales Outstanding volatility ($RZ = 5.00\sigma$).
+
+---
+
+## 5. Summary of Project Deliverables
+
+| Deliverable Component | Status | Location / Artifact |
 |---|---|---|
-| `quarterly_features.csv` | company × fiscal quarter | **Main secondary dataset** (≈90 columns) |
-| `annual_features.csv` | company × fiscal year | Annual ratios and Beneish M-Score |
-| `facts_long.csv` | one row per XBRL fact | Audit trail: every number traces to a filing accession number |
-| `coverage_report.csv` | company | Completeness check per company |
+| **Deliverable 1: Secondary Dataset** | Completed | `data/processed/quarterly_features.csv`, `annual_features.csv` |
+| **Deliverable 1: Extraction Notebook** | Completed | `01_edgar_data_extraction.ipynb` |
+| **Deliverable 1: Documentation** | Completed | `data_dictionary.csv`, `README.md` |
+| **Deliverable 1: Presentation** | Completed | `SEC_Anomaly_Detection_Deliverable1.pptx` |
+| **Deliverable 2: ML Analytics Notebook** | Completed | `02_ml_anomaly_detection.ipynb` (fully executed with outputs & plots) |
+| **Deliverable 2: Automated Pipeline** | Completed | `run_pipeline.py` & `src/anomaly_pipeline.py` (batch & single filing scoring) |
+| **Deliverable 2: Documentation** | Completed | `docs/DELIVERABLE2.md` & `README.md` |
+| **Deliverable 2: Presentation** | Completed | `SEC_Anomaly_Detection_Deliverable2.pptx` (16 widescreen slides with embedded figures) |
+| **Live Demonstration Tool** | Completed | `live_demo.py` (interactive CLI evaluation console) |
+| **Automated Test Suite** | Completed | `tests/test_anomaly_pipeline.py` (6 unit/integration tests) |
 
-## Quick start
+---
 
-1. Install the dependencies: `pip install pandas numpy requests jupyter`.
-2. Set your SEC identity as an environment variable, for example `export SEC_USER_AGENT="Your Name you@domain.com"` (Windows PowerShell: `$env:SEC_USER_AGENT="Your Name you@domain.com"`). The SEC rejects anonymous automated requests. You can also edit `USER_AGENT` in the notebook directly, but then your e-mail ends up in the repository.
-3. Optionally edit `CONTROL_TICKERS`, `REFERENCE_TICKERS`, `START_YEAR`.
-4. Open `notebooks/01_edgar_data_extraction.ipynb` and run all cells. The default 26 companies take roughly 1–3 minutes on a first run. Raw JSON is cached in `edgar_cache/` at the repo root (git-ignored), so later runs work offline and finish in seconds.
+## 6. Operational Forensic Triage Protocol
 
-## Data sources
+```
+[New SEC Filing Received]
+           │
+           ▼
+[Automated Feature Pipeline] ──> Compute Growth, Ratios, Trailing Z-Scores, Multi-Year Trends
+           │
+           ▼
+[Multi-Method Anomaly Scoring]
+   ├─ Robust Z-Score (|Z| >= 3.5)
+   ├─ Isolation Forest (Top 5% Contamination)
+   └─ Multi-Year Trend Deviation (|dev| >= 2.5σ)
+           │
+           ▼
+[Risk Classification]
+   ├─ HIGH ANOMALY (Multi-Method Consensus) ──> Immediate Priority Audit (Receivables, Contracts, Write-Downs)
+   ├─ ELEVATED (Single-Method Alert)        ──> Secondary Review (Inspect Tagging, Discontinued Ops, Restatements)
+   └─ NORMAL                                ──> Cleared for Automated Monitoring
+```
 
-All data comes from the SEC's free, keyless JSON APIs:
+---
 
-| Endpoint | Provides |
-|---|---|
-| `https://www.sec.gov/files/company_tickers.json` | Ticker → CIK mapping |
-| `https://data.sec.gov/submissions/CIK##########.json` | Company name, SIC industry, fiscal-year-end |
-| `https://data.sec.gov/api/xbrl/companyfacts/CIK##########.json` | Every XBRL fact the company has filed, with period dates, filing date, form type and accession number |
+## 7. Limitations & Honest Disclosures
 
-XBRL financial data became mandatory for large accelerated filers from 2009 and for all other US GAAP filers by 2011. The default `START_YEAR = 2014` therefore gives 10+ years for most companies, comfortably exceeding the 5-year requirement. The notebook requests at most about 8 per second, under the SEC's limit of 10.
-
-## Methodology
-
-**1. Tag standardisation.** Companies describe the same line item with different US-GAAP tags, and tags change over time. The largest such change was ASC 606 in 2018, when many firms moved from `SalesRevenueNet` to `RevenueFromContractWithCustomerExcludingAssessedTax`. Each standard item (23 in total) has an ordered list of candidate tags. For every period the highest-priority tag with a value is used, and the chosen revenue tag is stored. `revenue_tag_changed` marks quarters where the tag switched, so jumps caused purely by re-tagging can be excluded. Accounting identities fill gaps: gross profit = revenue − cost of revenue, and liabilities = total liabilities & equity − equity.
-
-**2. Point-in-time values and restatement detection.** A single quarter is reported several times: once in its own 10-Q, then as a comparative in later filings. The dataset uses the value **as first reported** for every financial figure. This matters for two reasons:
-- It is what investors actually saw at the time, which avoids look-ahead bias. This is the standard choice in fraud research, since the later restatement is the outcome being predicted.
-- It keeps derived quarters consistent. Later filings recast earlier years after spin-offs and discontinued operations. Subtracting a recast full year from a 9-month figure that was never recast produces a meaningless Q4. An earlier version of this pipeline did this, which showed up as false anomalies for 3M, Johnson & Johnson and Honeywell.
-
-The latest filed value is also kept. When it differs from the first reported value by more than 0.5%, the fact is marked as restated. These comparisons appear in `revenue_latest`, `revenue_restatement_pct`, `n_items_restated` and `n_bs_items_restated`. `any_amended` marks values that came from 10-K/A or 10-Q/A amendments.
-
-**3. Discrete quarters.** Q4 is never filed on its own, and cash-flow items appear in 10-Qs only as year-to-date totals. Discrete quarters are built in this order of preference:
-- `reported_3m`: a filed 3-month value.
-- `ytd_diff`: the difference of consecutive year-to-date values with the same start date (Q2 = 6M − 3M, Q4 = 12M − 9M).
-- `annual_minus_3q`: the full year minus the three known quarters.
-
-The method used for revenue is stored in `revenue_method`. After quarters are built, each fiscal year is checked against its annual revenue:
-- A quarter holding more than 90% of the year's revenue is a source-data error, where a full-year value was tagged as a quarter. Its revenue is set to missing and `dq_quarter_looks_annual` is set. This pattern appeared in Oracle's FY2018 data.
-- A year whose four quarters differ from the annual figure by more than 2% sets `dq_quarter_sum_mismatch`.
-
-**4. Fiscal calendar.** Fiscal year and quarter come from each company's fiscal-year-end. Dates are shifted by 14 days so that 52/53-week years (for example a year ending 2 January) and retailer calendars are labelled correctly. `fiscal_year` is always **the calendar year in which the fiscal year ends**. Some retailers use a different convention: Home Depot, Lowe's and Target name their fiscal year after the year it starts, so their own labels are one lower than this dataset's. Walmart already uses the ending year. `calendar_quarter` is provided for comparing companies with different fiscal years.
-
-**5. Lag matching by date.** Previous-quarter values are matched to periods ending 75–125 days earlier, and prior-year values to periods ending 340–390 days earlier. Lags are not taken by row position, so a missing quarter yields a blank value instead of a silently wrong growth rate.
-
-**6. Features.** Features are grouped into five families:
-- **Growth:** revenue QoQ and YoY (YoY removes seasonality), plus YoY growth of COGS, SG&A, net income, receivables, inventory and deferred revenue.
-- **Expense-to-revenue ratios and margins:** COGS, SG&A, R&D and operating expenses relative to revenue; total expense ratio = (revenue − operating income) / revenue; gross, operating and net margin; and year-over-year changes in these ratios.
-- **Earnings-quality red flags:** days sales outstanding (DSO), days inventory outstanding (DIO), receivables growth minus revenue growth (a channel-stuffing signal), inventory growth minus revenue growth, Sloan accruals ((net income − operating cash flow) / average assets), and cash conversion.
-- **Unusual jumps and drops:** trailing Z-scores (`z_*`) of eight key metrics, each compared with the company's own previous 8 quarters (minimum 4). Only past data is used, so there is no look-ahead bias. Robust median/MAD versions (`rz_*`) are included because a single extreme quarter inflates an ordinary standard deviation. `n_abs_z_gt_3` and `max_abs_z` summarise each quarter.
-- **Beneish M-Score** (annual file): all eight indices (DSRI, GMI, AQI, SGI, DEPI, SGAI, LVGI, TATA), the combined score, and a flag at the conventional −1.78 threshold.
-
-## Company universe
-
-The universe has two groups. The **control group** has 20 large, long-listed companies. The **reference group** has 6 companies with publicly reported restatements or SEC accounting actions: KHC, UAA, SMCI, MDXG, PLUG and MAT. The reference group gives weak labels for sanity-checking the Deliverable 2 models. Each case should be confirmed against the SEC's Accounting and Auditing Enforcement Releases (AAER) and the company's own filings before it is treated as ground truth. Tickers can be added freely, and companies that are no longer listed can be added by CIK through `EXTRA_CIKS`.
-
-## Validation
-
-The notebook checks its output in several ways:
-- For every company-year with four quarters, the four derived quarters are summed and compared with the reported annual revenue. The mismatch rate is printed.
-- Negative revenue, missing revenue and unusual period lengths are marked with `dq_*` columns. These rows are flagged, not dropped.
-- `coverage_report.csv` shows the share of quarters with revenue, cash-flow and receivables data for each company.
-
-The pipeline was tested end to end against simulated EDGAR responses (`tests/test_fixture_generator.py`). The simulation includes:
-- 10-Q year-to-date reporting and 10-K annual comparatives
-- a 52-week fiscal year
-- an ASC 606 revenue-tag switch
-- a restated quarter
-- a spin-off that recasts prior years
-- a full-year value mis-tagged as a quarter
-- a planted revenue/receivables spike
-
-Results: every derived quarter reconciled to annual revenue, the recast no longer distorted Q4, and the mis-tagged quarter was removed. The restatement and the planted spike still ranked among the top anomalies.
-
-On the real 26-company run, the first version reported a 6.9% quarter-vs-annual mismatch. The top anomalies included impossible values (3M Q4 2022 revenue of $11M; Oracle FY2018 Q4 equal to the full year). These led to the point-in-time fix and the annual sanity check.
-
-To repeat the offline test, run `python tests/test_fixture_generator.py edgar_cache` from the repo root, then run the notebook. The cache makes it read the simulated files. Delete `edgar_cache/` before switching to real data.
-
-## Known limitations
-
-- **Coverage:** Only US-GAAP facts in USD are extracted. Foreign private issuers filing 20-F under IFRS (for example Luckin Coffee) are not covered.
-- **Tags not captured:** Custom company-specific tags and segment-level (dimensional) facts are not included in the companyfacts API. When a company reports revenue only under a custom tag, revenue will be missing; `coverage_report.csv` shows this.
-- **Banks and insurers:** Their income statements do not map well to revenue/COGS. They are best modelled separately or with sector-specific items.
-- **Q4 behaviour:** Derived Q4 figures absorb year-end adjustments, such as audit adjustments and impairments. Q4 therefore shows more legitimate volatility than other quarters, and the anomaly models should treat `fiscal_quarter` as a feature or control for it.
-- **Legitimate causes of jumps:** Acquisitions, divestitures, accounting-standard changes and tag switches also cause large deviations. A high Z-score marks a quarter worth reviewing, not evidence of fraud.
-- **Recasts count as restatements:** A company that spins off a business, like Honeywell, recasts prior years. These recasts show up as restatements (Honeywell has 25 flagged quarters) even though nothing was misstated. Use `any_amended` or the size of `revenue_restatement_pct` to separate recasts from error corrections.
-- **Structural breaks:** Because values are point-in-time, the quarter after a spin-off shows a genuine drop in year-over-year growth, since the prior-year figure still includes the divested business. Examples include J&J after Kenvue (2023), 3M after Solventum (2024) and Honeywell (2025). These are legitimate events, not fraud.
-- **Receivables coverage:** Some companies (for example PepsiCo, McDonald's and Target) tag receivables with less common elements. Two additional tags were added; check `coverage_report.csv` after running.
-- **Restatement flag scope:** The flag catches restatements that appear as changed comparative figures. Full restatements filed only as 8-K Item 4.02 notices are not captured. Adding 8-K parsing from `/submissions` would be a natural extension.
-
-## Handoff to Deliverable 2 (modelling)
-
-Recommended model inputs are the ratio, growth, earnings-quality and restatement columns. Raw USD amounts depend on company size and should be left out or scaled. The trailing `z_*`/`rz_*` columns serve directly as the Z-score baseline. For Isolation Forest, use company-standardised features, drop rows where `revenue_tag_changed` is true or `dq_*` is set, and compare the resulting anomaly scores between the reference and control groups.
+1. **Anomaly Score is Not Fraud Proof:** An anomaly score highlights observations for human audit prioritization. Genuine corporate events (such as spinoffs, acquisitions, or accounting standard transitions) can cause extreme deviations.
+2. **US-GAAP & USD Coverage:** Only US-GAAP filers in USD are extracted from the SEC EDGAR facts API. Foreign private issuers filing under IFRS on Form 20-F are not covered.
+3. **Q4 Adjustment Volatility:** Derived Q4 figures absorb year-end audit adjustments and impairments, naturally exhibiting greater volatility than regular quarters.
+4. **Weak Labels:** Reference group labels reflect company-level historical enforcement and restatement records, not quarter-level ground truth. Model comparisons are descriptive validation tools.
