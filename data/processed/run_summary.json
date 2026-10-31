@@ -1,5 +1,5 @@
 {
-  "input_quarterly_file": "C:\\Users\\Shubham\\Desktop\\sem 7\\BDA\\SEC-Filing-Anomaly-Detection-main\\SEC-Filing-Anomaly-Detection-main\\data\\processed\\quarterly_features.csv",
+  "input_quarterly_file": "C:\\Users\\Shubham\\Desktop\\sem 7\\BDA\\SEC-Filing-Anomaly-Detection-main\\data\\processed\\quarterly_features.csv",
   "input_annual_file_available": true,
   "filtering": {
     "input_rows": 1334,
@@ -73,13 +73,13 @@
   "statistical_flagged": 391,
   "multi_year_trend_flagged": 282,
   "outputs": {
-    "scored_quarterly": "C:\\Users\\Shubham\\Desktop\\sem 7\\BDA\\SEC-Filing-Anomaly-Detection-main\\SEC-Filing-Anomaly-Detection-main\\data\\processed\\scored_quarterly.csv",
-    "top100": "C:\\Users\\Shubham\\Desktop\\sem 7\\BDA\\SEC-Filing-Anomaly-Detection-main\\SEC-Filing-Anomaly-Detection-main\\data\\processed\\anomaly_top100.csv",
-    "model_comparison": "C:\\Users\\Shubham\\Desktop\\sem 7\\BDA\\SEC-Filing-Anomaly-Detection-main\\SEC-Filing-Anomaly-Detection-main\\data\\processed\\model_comparison.csv",
-    "company_ranking": "C:\\Users\\Shubham\\Desktop\\sem 7\\BDA\\SEC-Filing-Anomaly-Detection-main\\SEC-Filing-Anomaly-Detection-main\\data\\processed\\company_anomaly_ranking.csv",
-    "beneish_comparison": "C:\\Users\\Shubham\\Desktop\\sem 7\\BDA\\SEC-Filing-Anomaly-Detection-main\\SEC-Filing-Anomaly-Detection-main\\data\\processed\\beneish_comparison.csv",
-    "multi_year_trend_anomalies": "C:\\Users\\Shubham\\Desktop\\sem 7\\BDA\\SEC-Filing-Anomaly-Detection-main\\SEC-Filing-Anomaly-Detection-main\\data\\processed\\multi_year_trend_anomalies.csv",
-    "model_artifact": "C:\\Users\\Shubham\\Desktop\\sem 7\\BDA\\SEC-Filing-Anomaly-Detection-main\\SEC-Filing-Anomaly-Detection-main\\data\\processed\\isolation_forest_model.joblib"
+    "scored_quarterly": "C:\\Users\\Shubham\\Desktop\\sem 7\\BDA\\SEC-Filing-Anomaly-Detection-main\\data\\processed\\scored_quarterly.csv",
+    "top100": "C:\\Users\\Shubham\\Desktop\\sem 7\\BDA\\SEC-Filing-Anomaly-Detection-main\\data\\processed\\anomaly_top100.csv",
+    "model_comparison": "C:\\Users\\Shubham\\Desktop\\sem 7\\BDA\\SEC-Filing-Anomaly-Detection-main\\data\\processed\\model_comparison.csv",
+    "company_ranking": "C:\\Users\\Shubham\\Desktop\\sem 7\\BDA\\SEC-Filing-Anomaly-Detection-main\\data\\processed\\company_anomaly_ranking.csv",
+    "beneish_comparison": "C:\\Users\\Shubham\\Desktop\\sem 7\\BDA\\SEC-Filing-Anomaly-Detection-main\\data\\processed\\beneish_comparison.csv",
+    "multi_year_trend_anomalies": "C:\\Users\\Shubham\\Desktop\\sem 7\\BDA\\SEC-Filing-Anomaly-Detection-main\\data\\processed\\multi_year_trend_anomalies.csv",
+    "model_artifact": "C:\\Users\\Shubham\\Desktop\\sem 7\\BDA\\SEC-Filing-Anomaly-Detection-main\\data\\processed\\isolation_forest_model.joblib"
   },
   "caveat": "Flags identify observations for review and are not proof of fraud. Group-level labels are weak labels, not quarter-level ground truth."
 }

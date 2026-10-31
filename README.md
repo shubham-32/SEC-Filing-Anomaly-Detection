@@ -26,13 +26,15 @@ The system combines:
 
 ```
 ├── README.md                                 # Complete project documentation (Deliverables 1 & 2)
+├── app.py                                    # Interactive Streamlit forensic evaluation dashboard (Live Viva UI)
+├── run_dashboard.bat                         # 1-click Windows desktop launcher for the Streamlit UI
 ├── 01_edgar_data_extraction.ipynb            # Deliverable 1: Extraction & secondary dataset build
 ├── 02_ml_anomaly_detection.ipynb             # Deliverable 2: Fully executed ML & trend analysis notebook
 ├── run_pipeline.py                           # Automated pipeline CLI for batch and new filing scoring
-├── live_demo.py                              # Interactive evaluation console for live project demonstration
+├── live_demo.py                              # Interactive CLI console for terminal-based evaluation
 ├── data_dictionary.csv                       # Feature definitions and XBRL lineage
 ├── SEC_Anomaly_Detection_Deliverable1.pptx   # Deliverable 1 presentation deck
-├── SEC_Anomaly_Detection_Deliverable2.pptx   # Deliverable 2 presentation deck (16 widescreen slides)
+├── SEC_Anomaly_Detection_Deliverable2.pptx   # Deliverable 2 presentation deck (15 widescreen slides, styled to PPT1)
 │
 ├── data/
 │   └── processed/                            # Secondary dataset and generated ML artifacts
@@ -91,12 +93,23 @@ python run_pipeline.py --ticker AAPL
 python run_pipeline.py --filing-file path/to/filing.json
 ```
 
-### 3.3 Launch the Live Interactive Demonstration Console
-For project evaluation and viva demonstrations:
+### 3.3 Launch the Live Interactive Demonstration Tools
+
+For live project evaluation and viva examinations on your laptop:
+
+#### Option A: Interactive Streamlit Forensic Web Dashboard (Recommended for Viva)
+```bash
+# Launch via terminal:
+streamlit run app.py
+# Or on Windows, double-click 'run_dashboard.bat'
+```
+*Opens an interactive browser dashboard with Plotly charts, live new-filing audit scorecard simulator, multi-year trend explorers, and documented fraud case study walkthroughs.*
+
+#### Option B: Terminal-Based Live Evaluation Console (CLI Fallback)
 ```bash
 python live_demo.py
 ```
-**Interactive Modes:**
+**Interactive Console Modes:**
 1. **Interactive Company Anomaly Explorer:** View any company's 10-year quarterly history, flag rates, and sudden deviation quarters.
 2. **Top Anomalies Leaderboard:** Universe-wide ranking of the most anomalous filings.
 3. **Automated Pipeline for New Filings (Live Simulation):** Ingest and score live filings for KHC, UAA, SMCI, or MSFT in under two seconds.
@@ -151,8 +164,9 @@ python -c "from tests import test_anomaly_pipeline as t; t.test_quality_filters_
 | **Deliverable 2: ML Analytics Notebook** | Completed | `02_ml_anomaly_detection.ipynb` (fully executed with outputs & plots) |
 | **Deliverable 2: Automated Pipeline** | Completed | `run_pipeline.py` & `src/anomaly_pipeline.py` (batch & single filing scoring) |
 | **Deliverable 2: Documentation** | Completed | `docs/DELIVERABLE2.md` & `README.md` |
-| **Deliverable 2: Presentation** | Completed | `SEC_Anomaly_Detection_Deliverable2.pptx` (16 widescreen slides with embedded figures) |
-| **Live Demonstration Tool** | Completed | `live_demo.py` (interactive CLI evaluation console) |
+| **Deliverable 2: Presentation** | Completed | `SEC_Anomaly_Detection_Deliverable2.pptx` (15 widescreen slides matching Deliverable 1 design) |
+| **Live Web Demonstration Dashboard** | Completed | `app.py` & `run_dashboard.bat` (interactive Streamlit UI) |
+| **Live Demonstration CLI Tool** | Completed | `live_demo.py` (interactive terminal evaluation console) |
 | **Automated Test Suite** | Completed | `tests/test_anomaly_pipeline.py` (6 unit/integration tests) |
 
 ---
