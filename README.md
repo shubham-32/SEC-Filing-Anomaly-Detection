@@ -34,7 +34,7 @@ The system combines:
 ├── live_demo.py                              # Interactive CLI console for terminal-based evaluation
 ├── data_dictionary.csv                       # Feature definitions and XBRL lineage
 ├── SEC_Anomaly_Detection_Deliverable1.pptx   # Deliverable 1 presentation deck
-├── SEC_Anomaly_Detection_Deliverable2.pptx   # Deliverable 2 presentation deck (15 widescreen slides, styled to PPT1)
+├── SEC_Anomaly_Detection_Deliverable2.pptx   # Deliverable 2 presentation deck (14 widescreen slides, executive & visual layout)
 │
 ├── data/
 │   └── processed/                            # Secondary dataset and generated ML artifacts
@@ -164,7 +164,7 @@ python -c "from tests import test_anomaly_pipeline as t; t.test_quality_filters_
 | **Deliverable 2: ML Analytics Notebook** | Completed | `02_ml_anomaly_detection.ipynb` (fully executed with outputs & plots) |
 | **Deliverable 2: Automated Pipeline** | Completed | `run_pipeline.py` & `src/anomaly_pipeline.py` (batch & single filing scoring) |
 | **Deliverable 2: Documentation** | Completed | `docs/DELIVERABLE2.md` & `README.md` |
-| **Deliverable 2: Presentation** | Completed | `SEC_Anomaly_Detection_Deliverable2.pptx` (15 widescreen slides matching Deliverable 1 design) |
+| **Deliverable 2: Presentation** | Completed | `SEC_Anomaly_Detection_Deliverable2.pptx` (14 widescreen slides, visual executive format) |
 | **Live Web Demonstration Dashboard** | Completed | `app.py` & `run_dashboard.bat` (interactive Streamlit UI) |
 | **Live Demonstration CLI Tool** | Completed | `live_demo.py` (interactive terminal evaluation console) |
 | **Automated Test Suite** | Completed | `tests/test_anomaly_pipeline.py` (6 unit/integration tests) |
